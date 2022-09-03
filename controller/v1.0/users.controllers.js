@@ -1,16 +1,17 @@
 
 const allUserdata = require('../../users.json');
+const fs = require("fs")
 
-// module.exports.homeRoute = (req, res) => {
-//     res.send(`
-//      <h1>Node Express Assignment</h1>
-//         <a href='/api/v1.0/random '>Get Random User</a>
-//     `)
-// }
 module.exports.getAllRandomUsers = (req, res) => {
+    const query = req.query;
 
-    res.send(allUserdata)
+    if (query) {
+        res.send(allUserdata.slice(0, query.limit,))
 
+    }
+    else {
+        res.send(allUserdata)
+    }
 }
 
 
@@ -27,11 +28,21 @@ module.exports.getARandomUser = (req, res) => {
 module.exports.saveAuser = (req, res) => {
     let id = allUserdata.length + 1;
 
-    allUserdata.push({ id, ...req.body })
 
+    const userInfo = { id, ...req.body }
+
+    if (!userInfo || !userInfo.name || !userInfo.gender || !userInfo.contact) {
+        return res.send({
+            message: "Give all information correctly",
+            status: 400
+        })
+    }
+
+    allUserdata.push(userInfo)
 
     //console.log(allUserdata.length)
-    res.json(allUserdata)
+    res.send(allUserdata)
+    fs.writeFileSync("../../users.json", JSON.stringify(allUserdata))
 
 }
 
@@ -41,37 +52,50 @@ module.exports.updateAUser = (req, res) => {
 
     const matchedUser = allUserdata.find(user => user.id == Number(id));
     const indexNumber = allUserdata.indexOf(matchedUser)
-    console.log(matchedUser)
+    if (!matchedUser) {
+        res.status(404).send({
+            message: "User not found",
+            status: 404,
+        });
+    }
 
     const updatedInfo = { ...req.body }
     allUserdata.splice(indexNumber, 1, updatedInfo)
     // console.log(updatedInfo)
 
+
     res.send(allUserdata)
+    fs.writeFileSync("../../users.json", JSON.stringify(allUserdata))
 }
 
 
 module.exports.deleteARandomUser = (req, res) => {
-    const id = req.params.id;
-    // const id = req.params.id-1;
-    const matchedUser = allUserdata.find(user => user.id == Number(id));
+    const id = Number(req.params.id);
 
+    if (!id) {
+        res.send({
+            message: "id not found",
+            status: 404
+        })
+    }
 
-    // console.log(typeof matchedUser)
+    const matchedUser = allUserdata.find(user => user.id == id);
     // console.log(matchedUser)
-    const indexNumber = allUserdata.indexOf(matchedUser)
-    console.log(indexNumber)
-    // console.log(indexNumber)
-    allUserdata.slice(indexNumber, 1)
-    res.send(allUserdata)
 
+    const indexNumber = allUserdata.indexOf(matchedUser)
+
+    // console.log(indexNumber)
+    const user = allUserdata.slice(0, indexNumber)
+
+    const restUser = allUserdata.filter(user => user.id !== id)
+
+    res.send(restUser)
+    fs.writeFileSync("../../users.json", JSON.stringify(allUserdata))
 }
 
 
 
-
-
-//bulk 
+//bulk-update 
 module.exports.bulkUserUpdate = (req, res) => {
     const { users } = req.body;
     console.log(users);
@@ -81,24 +105,11 @@ module.exports.bulkUserUpdate = (req, res) => {
         return updatedUser ? { ...user, ...updatedUser } : user;
 
     });
+    fs.writeFileSync("../../users.json", JSON.stringify(allUserdata))
     res.json({
-        message: "Users updated successfully",
+        message: " Multiusers updated successfully",
         status: 200,
         data: updatedUsers,
     });
 
 }
-
-
-
-
-
-
-
-
-
-
-// console.log(typeof matchedUser)
-    // console.log(matchedUser)
-    //  const indexNumber = allUserdata.indexOf(matchedUser)
-    // console.log(indexNumber)

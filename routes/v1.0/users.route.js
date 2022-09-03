@@ -23,3 +23,4 @@ router.route('/:id')
 // Bulk update
 router.patch("/bulk-update/", bulkUserUpdate);
 module.exports = router
+

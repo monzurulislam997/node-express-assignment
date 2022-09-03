@@ -10,7 +10,9 @@ app.use(express.json())
 
 app.use('/api/v1.0/user', userRoutes)
 
-
+app.use("/", (req, res) => {
+    res.send("Welcome to  node acc first assignment")
+})
 app.all("*", (req, res) => {
     res.send("Not Found Anything")
 })

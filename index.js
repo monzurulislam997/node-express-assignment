@@ -7,17 +7,13 @@ const userRoutes = require("./routes/v1.0/users.route")
 app.use(cors())
 app.use(express.json())
 
-// app.get('/', homeRoute)
-// app.get('/api/v1.0/users', getAllRandomUsers
-// )
+
 app.use('/api/v1.0/user', userRoutes)
 
-// app.use('/api/v1.0/random', userRoutes)
-// app.use('/api/v1.0/random ', userRoutes)
 
-// app.use('/api/v1.0/user/save', saveAuser)
-// app.use('/api/v1.0/user/:id', deleteARandomUser)
-
+app.all("*", (req, res) => {
+    res.send("Not Found Anything")
+})
 app.listen(port, () => {
     console.log("server is running")
 })

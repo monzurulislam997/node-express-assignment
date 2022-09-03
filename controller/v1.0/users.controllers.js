@@ -35,6 +35,21 @@ module.exports.saveAuser = (req, res) => {
 
 }
 
+//update user
+module.exports.updateAUser = (req, res) => {
+    const id = req.params.id;
+
+    const matchedUser = allUserdata.find(user => user.id == Number(id));
+    const indexNumber = allUserdata.indexOf(matchedUser)
+    console.log(matchedUser)
+
+    const updatedInfo = { ...req.body }
+    allUserdata.splice(indexNumber, 1, updatedInfo)
+    // console.log(updatedInfo)
+
+    res.send(allUserdata)
+}
+
 
 module.exports.deleteARandomUser = (req, res) => {
     const id = req.params.id;
@@ -56,7 +71,23 @@ module.exports.deleteARandomUser = (req, res) => {
 
 
 
+//bulk 
+module.exports.bulkUserUpdate = (req, res) => {
+    const { users } = req.body;
+    console.log(users);
+    //   console.log(testData);
+    const updatedUsers = allUserdata.map((user) => {
+        const updatedUser = users.find((user) => user.id === user.id);
+        return updatedUser ? { ...user, ...updatedUser } : user;
 
+    });
+    res.json({
+        message: "Users updated successfully",
+        status: 200,
+        data: updatedUsers,
+    });
+
+}
 
 
 
